@@ -1,56 +1,69 @@
 import { Container } from '@mui/material';
 import { Component } from 'react';
+import { useReducer } from 'react';
 import Statistics from './Statistics/Statistics';
 import FeedbackOptions from './Options/FeedbackOptions';
 import Section from './Section/Section';
 import Notification from './Notification/Notification';
 
-export class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  };
-  totalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-    return good + neutral + bad;
-  };
-  feedbackOptions = option => {
-    this.setState(firstState => {
-      return {
-        ...firstState,
-        [option]: firstState[option] + 1,
-      };
+const initialState = {
+  good: 0,
+  neutral: 0,
+  bad: 0,
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'setFeedback':
+      return { ...state, [action.payload]: state[action.payload] + 1 };
+    default:
+      return state;
+  }
+}
+
+
+export function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const feedbackOptions = option => {
+    dispatch({
+      type: 'setFeedback',
+      payload: option,
     });
   };
-  percentage = () => {
-    const { good, neutral, bad } = this.state;
+
+  const totalFeedback = () => {
+    const { good, neutral, bad } = state;
+    return good + neutral + bad;
+  };
+  
+  const percentage = () => {
+    const { good, neutral, bad } = state;
     const a = good + neutral + bad;
     return (good * 100) / a;
   };
-  render() {
+  
     return (
       <Container maxWidth="xl">
         <Section title="Please leave feedback">
           <FeedbackOptions
-            options={Object.keys(this.state)}
-            feedback={key => this.feedbackOptions(key)}
+            options={Object.keys(state)}
+            feedback={key => feedbackOptions(key)}
           />
         </Section>
-        {!this.totalFeedback() ? (
+        {!totalFeedback() ? (
           <Notification message="There is no feedback" />
         ) : (
           <Section title="Statistics">
             <Statistics
-              good={this.state.good}
-              neutral={this.state.neutral}
-              bad={this.state.bad}
-              total={this.totalFeedback()}
-              percentage={this.percentage()}
+              good={state.good}
+              neutral={state.neutral}
+              bad={state.bad}
+              total={totalFeedback()}
+              percentage={percentage()}
             />
           </Section>
         )}
       </Container>
     );
-  }
 }
