@@ -67,4 +67,3 @@ export function App() {
       </Container>
     );
 }
-
