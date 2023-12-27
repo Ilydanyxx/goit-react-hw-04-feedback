@@ -1,5 +1,4 @@
 import { Container } from '@mui/material';
-import { Component } from 'react';
 import { useReducer } from 'react';
 import Statistics from './Statistics/Statistics';
 import FeedbackOptions from './Options/FeedbackOptions';
